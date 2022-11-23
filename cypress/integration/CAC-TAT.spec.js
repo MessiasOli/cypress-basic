@@ -1,5 +1,7 @@
 /// <reference types="Cypress" />
 
+let Three_seconds_in_ms = 3000
+
 describe('Central de Atendimento ao Cliente TAT', function() {
     beforeEach(function() {
         cy.visit("./src/index.html")
@@ -11,22 +13,35 @@ describe('Central de Atendimento ao Cliente TAT', function() {
 
     it("preenche os campos obrigatórios e envia o formulário e envia o formulário", function(){
         const longTest = "Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste "
+
+        cy.clock();
+
         cy.get('#firstName').type("Messias")
         cy.get('#lastName').type("Oliveira")
         cy.get('#email').type("teste@teste.com.br")
         cy.get('#open-text-area').type(longTest, { delay: 0 })
         cy.get('button[type="submit"]').click()
+
         cy.get(".success").should("be.visible")
+
+        cy.tick(Three_seconds_in_ms)
+
+        cy.get(".success").should("be.not.visible")
     })
 
     it("exibe message de erro ao submeter o formulário com email errado", function(){
         const longTest = "Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste Teste "
+        cy.clock();
         cy.get('#firstName').type("Messias")
         cy.get('#lastName').type("Oliveira")
         cy.get('#email').type("teste@teste")
         cy.get('#open-text-area').type(longTest, { delay: 0 })
         cy.get('button[type="submit"]').click()
         cy.get('.error').should("be.visible")
+
+        cy.tick(Three_seconds_in_ms)
+
+        cy.get(".error").should("be.not.visible")
     })
 
     it("Campo telefone continua vazio quando não for numero", function(){
@@ -165,6 +180,31 @@ describe('Central de Atendimento ao Cliente TAT', function() {
         .click()
 
         cy.contains("Talking About Testing").should("be.visible")
+    })
+
+    it("exibe e esconde as menssagens de esucesso e erro usando o .invoke", () => {
+        cy.get(".success")
+            .should("not.be.visible")
+            .invoke("show")
+            .should("be.visible")
+            .invoke("hide")
+            .should("not.be.visible")
+            .invoke("show")
+            .should("be.visible")
+    })
+
+    it("preenche a area de texti usando o comando invoke", function(){
+        const longText = Cypress._.repeat("0123456789", 20)
+        cy.get('#open-text-area')
+            .invoke("val", longText)
+            .should("have.value", longText)
+
+    })
+
+    it.only("encontre o gato escondido", function(){
+        cy.get("#cat")
+            .invoke("show")
+            .should("be.visible")
     })
 })
   
